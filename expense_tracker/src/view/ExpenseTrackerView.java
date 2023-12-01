@@ -32,16 +32,15 @@ public class ExpenseTrackerView extends JFrame implements ExpenseTrackerModelLis
   private JButton amountFilterBtn;
 
   private JButton undoButton;
-  
-
+ 
   public ExpenseTrackerView() {
     setTitle("Expense Tracker"); // Set title
     setSize(600, 400); // Make GUI larger
 
     String[] columnNames = {"serial", "Amount", "Category", "Date"};
     this.model = new ExpenseTrackerTableModel(columnNames, 0);
-
-    
+    //model = new ExpenseTrackerTableModel(new Object[0][columnNames.length], columnNames);
+    //model.register(this); 
     // Create table
     transactionsTable = new JTable(model);
 
@@ -207,6 +206,15 @@ public class ExpenseTrackerView extends JFrame implements ExpenseTrackerModelLis
 
       transactionsTable.repaint();
   }
+
+  public void modelChanged(ExpenseTrackerModel model) {
+        SwingUtilities.invokeLater(() -> {
+            refreshTable(model.getTransactions());
+            if (model.getMatchedFilterIndices().size() > 0) {
+                highlightRows(model.getMatchedFilterIndices());
+            }
+        });
+    }
 
   public List<Transaction> getDisplayedTransactions() {
       // To support testability
